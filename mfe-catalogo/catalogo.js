@@ -2,7 +2,7 @@
 // Tecnología: Vue 3 desde CDN (unpkg), sin build.
 // Contrato: window.renderCatalogo(idContenedor) / window.unmountCatalogo(idContenedor)
 // Publica:  'carrito:agregar'  { id, nombre, precio }
-import Vue from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js';
+import * as Vue from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js';
 
 const VERSION = '2.0.0';
 

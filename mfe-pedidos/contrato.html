@@ -33,6 +33,12 @@
       resultados.appendChild(div);
     }
 
+    // Helper: accede al texto del Shadow DOM del componente
+    function textoShadow(host) {
+      if (!host || !host.shadowRoot) return '';
+      return host.shadowRoot.textContent || '';
+    }
+
     window.addEventListener('pedido:estado', (e) => eventosEstado.push(e.detail));
 
     window.addEventListener('load', () => {
@@ -40,38 +46,46 @@
       check('window.renderPedidos es función',  typeof window.renderPedidos === 'function');
       check('window.unmountPedidos es función', typeof window.unmountPedidos === 'function');
 
-      // 2. Montaje genera contenido
+      // 2. Montaje genera contenido (Lit es asíncrono, esperamos a que pinte)
       window.renderPedidos('raiz-local');
       const raiz = document.getElementById('raiz-local');
-      check('El montaje genera contenido', raiz.children.length > 0);
-      check('Contiene título "Seguimiento"', raiz.textContent.includes('Seguimiento'));
-
-      // 3. Reacciona a pedido:confirmado
-      window.dispatchEvent(new CustomEvent('pedido:confirmado', {
-        detail: {
-          id: 7777,
-          items: [{ id: 1, nombre: 'Chivo guisado', precio: 28000, cantidad: 1 }],
-          total: 30800,
-          version: 1
-        }
-      }));
 
       setTimeout(() => {
-        check('El pedido aparece en pantalla',
-              raiz.textContent.includes('7777') || raiz.textContent.includes('Pedido #7777'));
+        const el = raiz.querySelector('mfe-pedidos');
+        check('El montaje genera contenido', raiz.children.length > 0);
+        check('Existe <mfe-pedidos>', !!el);
+        check('Tiene Shadow DOM', !!(el && el.shadowRoot));
+        check('Contiene título "Seguimiento"',
+              textoShadow(el).includes('Seguimiento'));
 
-        // 4. Esperar ~3.5 s al primer pedido:estado
-        setTimeout(() => {
-          check('Se emitió pedido:estado', eventosEstado.length > 0);
-          if (eventosEstado.length > 0) {
-            const e = eventosEstado[0];
-            check('detail.pedidoId es number', typeof e.pedidoId === 'number');
-            check('detail.estado es string',   typeof e.estado === 'string');
-            check('detail.version === 1',      e.version === 1);
-            check('estado === "En preparación"', e.estado === 'En preparación');
+        // 3. Reacciona a pedido:confirmado
+        window.dispatchEvent(new CustomEvent('pedido:confirmado', {
+          detail: {
+            id: 7777,
+            items: [{ id: 1, nombre: 'Chivo guisado', precio: 28000, cantidad: 1 }],
+            total: 30800,
+            version: 1
           }
-        }, 3500);
-      }, 100);
+        }));
+
+        // Lit también es asíncrono al re-renderizar tras el evento
+        setTimeout(() => {
+          check('El pedido aparece en pantalla',
+                textoShadow(el).includes('7777'));
+
+          // 4. Esperar ~3.5 s al primer pedido:estado
+          setTimeout(() => {
+            check('Se emitió pedido:estado', eventosEstado.length > 0);
+            if (eventosEstado.length > 0) {
+              const e = eventosEstado[0];
+              check('detail.pedidoId es number', typeof e.pedidoId === 'number');
+              check('detail.estado es string',   typeof e.estado === 'string');
+              check('detail.version === 1',      e.version === 1);
+              check('estado === "En preparación"', e.estado === 'En preparación');
+            }
+          }, 3500);
+        }, 100);
+      }, 50);
     });
   </script>
 </body>

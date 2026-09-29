@@ -31,7 +31,6 @@ class MfePedidos extends LitElement {
   };
 
   static styles = css`
-    @import url('http://localhost:8081/tokens.css');
 
     :host { display: block; }
     h2 { color: var(--color-primario, #0b4f8a); margin: 0 0 4px; }
@@ -79,6 +78,7 @@ class MfePedidos extends LitElement {
 
   render() {
     return html`
+      <link rel="stylesheet" href="http://localhost:8081/tokens.css">
       <h2>Seguimiento de pedidos</h2>
       <span class="version">mfe-pedidos v${VERSION} · Lit desde CDN</span>
 
