@@ -1,0 +1,43 @@
+/* ============================================================
+   design-tokens / tokens.css
+   Sistema de diseño mínimo de SaborUPC.
+   Servido desde su propio origen: http://localhost:8084/tokens.css
+   Consumido por: contenedor, mfe-catalogo, mfe-carrito, mfe-perfil, mfe-pedidos.
+   SOLO UI. Sin lógica de negocio.
+   Versión: 1
+   ============================================================ */
+
+:root {
+  /* ---- Colores ---- */
+  --color-primario:        #0b4f8a;   /* azul institucional */
+  --color-primario-claro:  #1283c8;
+  --color-acento:          #f2c200;   /* amarillo badge */
+  --color-exito:           #1b7a3e;   /* verde confirmaciones */
+  --color-peligro:         #c0392b;   /* rojo errores */
+  --color-fondo:           #f4f6f8;
+  --color-superficie:      #ffffff;
+  --color-borde:           #dde3ea;
+  --color-texto:           #222222;
+  --color-texto-suave:     #777777;
+
+  /* ---- Tipografía ---- */
+  --fuente-base:           Arial, Helvetica, sans-serif;
+  --tam-titulo:            22px;
+  --tam-subtitulo:         17px;
+  --tam-cuerpo:            15px;
+  --tam-pequeno:           12px;
+
+  /* ---- Espaciado ---- */
+  --espaciado-1:           4px;
+  --espaciado-2:           8px;
+  --espaciado-3:           16px;
+  --espaciado-4:           24px;
+  --espaciado-5:           32px;
+
+  /* ---- Radios ---- */
+  --radio-sm:              4px;
+  --radio-md:              6px;
+
+  /* ---- Sombras ---- */
+  --sombra-toast:          0 4px 14px rgba(0, 0, 0, 0.18);
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Contrato · mfe-catalogo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; background: #fafafa; }
+    h1 { font-size: 18px; }
+    .item { font-family: monospace; padding: 4px 0; }
+    .ok  { color: #1b7a3e; }
+    .mal { color: #c0392b; }
+    #montaje { margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Prueba de contrato · mfe-catalogo</h1>
+  <div id="resultados"></div>
+
+  <h3>Salida del montaje</h3>
+  <div id="raiz-local"></div>
+
+  <script type="module">
+    import './catalogo.js';
+
+    const resultados = document.getElementById('resultados');
+    let eventosCapturados = [];
+
+    function check(nombre, condicion) {
+      console.assert(condicion, nombre);
+      const div = document.createElement('div');
+      div.className = 'item ' + (condicion ? 'ok' : 'mal');
+      div.textContent = (condicion ? '✓ ' : '✗ ') + nombre;
+      resultados.appendChild(div);
+    }
+
+    window.addEventListener('carrito:agregar', (e) => eventosCapturados.push(e.detail));
+
+    window.addEventListener('load', () => {
+      // 1. Funciones expuestas
+      check('window.renderCatalogo es función',   typeof window.renderCatalogo === 'function');
+      check('window.unmountCatalogo es función',  typeof window.unmountCatalogo === 'function');
+
+      // 2. Montaje genera contenido
+      window.renderCatalogo('raiz-local');
+      const raiz = document.getElementById('raiz-local');
+      check('El montaje genera contenido', raiz.children.length > 0);
+      check('Contiene título "Catálogo"', raiz.textContent.includes('Catálogo'));
+
+      // 3. Evento carrito:agregar con estructura acordada
+      const boton = raiz.querySelector('.cat-boton');
+      check('Existe un botón .cat-boton', !!boton);
+      if (boton) {
+        boton.click();
+        setTimeout(() => {
+          const ev = eventosCapturados[0];
+          check('Se emitió carrito:agregar', !!ev);
+          if (ev) {
+            check('detail.id es number',     typeof ev.id === 'number');
+            check('detail.nombre es string', typeof ev.nombre === 'string');
+            check('detail.precio es number', typeof ev.precio === 'number');
+          }
+        }, 50);
+      }
+    });
+  </script>
+</body>
+</html>

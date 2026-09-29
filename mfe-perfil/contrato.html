@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Contrato · mfe-perfil</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; background: #fafafa; }
+    h1 { font-size: 18px; }
+    .item { font-family: monospace; padding: 4px 0; }
+    .ok  { color: #1b7a3e; }
+    .mal { color: #c0392b; }
+    #montaje { margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Prueba de contrato · mfe-perfil</h1>
+  <div id="resultados"></div>
+
+  <h3>Salida del montaje</h3>
+  <div id="montaje"></div>
+
+  <script src="perfil.js"></script>
+  <script>
+    const resultados = document.getElementById('resultados');
+    let ultimoUsuario = null;
+
+    function check(nombre, condicion) {
+      console.assert(condicion, nombre);
+      const div = document.createElement('div');
+      div.className = 'item ' + (condicion ? 'ok' : 'mal');
+      div.textContent = (condicion ? '✓ ' : '✗ ') + nombre;
+      resultados.appendChild(div);
+    }
+
+    window.addEventListener('usuario:cambio', (e) => { ultimoUsuario = e.detail; });
+
+    window.addEventListener('load', () => {
+      // 1. Etiqueta definida
+      check('customElements.get("mfe-perfil") definido',
+            !!customElements.get('mfe-perfil'));
+
+      // 2. Montaje genera Shadow DOM con form
+      const el = document.createElement('mfe-perfil');
+      document.getElementById('montaje').appendChild(el);
+
+      setTimeout(() => {
+        const sombra = el.shadowRoot;
+        check('El componente tiene Shadow DOM', !!sombra);
+        if (sombra) {
+          const form = sombra.querySelector('form');
+          check('Shadow DOM contiene un <form>', !!form);
+          check('Shadow DOM contiene h2', !!sombra.querySelector('h2'));
+
+          if (form) {
+            // 3. Submit emite usuario:cambio
+            form.nombre.value = 'Ana';
+            form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+            setTimeout(() => {
+              check('Se emitió usuario:cambio', !!ultimoUsuario);
+              if (ultimoUsuario) {
+                check('detail.nombre es string', typeof ultimoUsuario.nombre === 'string');
+                check('detail.nombre === "Ana"', ultimoUsuario.nombre === 'Ana');
+              }
+            }, 50);
+          }
+        }
+      }, 50);
+    });
+  </script>
+</body>
+</html>
