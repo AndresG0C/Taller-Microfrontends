@@ -77,11 +77,11 @@ Cada servidor va en **su propia terminal**, desde su carpeta:
 ```bash
 # Terminal 1 — Contenedor (no necesita --cors)
 cd contenedor
-python -m http.server 8080 | npx http-server -p 8080 -c-1
+python -m http.server 8080 || npx http-server -p 8080 -c-1
 
 # Terminal 2 — Design tokens
 cd design-tokens
-python -m http.server 8081 | npx http-server -p 8081 -c-1
+python -m http.server 8081 || npx http-server -p 8081 -c-1
 
 # Terminal 3 — MFE Catálogo (Vue 3)
 cd mfe-catalogo
